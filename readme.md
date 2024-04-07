@@ -10,7 +10,7 @@ Blogger is a clone of the Medium platform, designed to replicate its features an
 - Responsive Design: Ensure the website is accessible and user-friendly across different devices.
 
 ## Technologies Used
-- Frontend: React 
+- Frontend: React and Tailwind
 - Backend: Hono
 - Database: Postgres
 - Deployment: Cloudflare workers
