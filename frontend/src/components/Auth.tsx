@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {Link,useNavigate} from "react-router-dom";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {SignupInput} from "@devansh-rai/medium-zod/dist";   
 import axios from "axios";
 import {BACKEND_URL} from "../../config.ts";
@@ -13,12 +13,22 @@ function Auth({type}:{type:"signin" | "signup"})
         email: "",
         password: "",
     });
+    const [error,setError] = useState<boolean>(false);
+
+    useEffect(() => {
+        setError(false);
+    },[postInputs]);
 
     async function sendRequest()
     {
         try{
             const response = await axios.post(`${BACKEND_URL}/api/v1/user/${type==="signin"?"signin":"signup"}`,postInputs);
             const jwt = response.data;
+            if(jwt.status === 403)
+            {
+                setError(true);
+                return;
+            }
             // console.log(jwt.token);
             localStorage.setItem("token",jwt.token);
             localStorage.setItem("Name",postInputs.name);
@@ -26,6 +36,7 @@ function Auth({type}:{type:"signin" | "signup"})
         }
         catch(e){
             console.log(e);
+            setError(true);
         }
     }
 
@@ -41,6 +52,7 @@ function Auth({type}:{type:"signin" | "signup"})
                             {type==="signup"?"Already have an account?":"Don't have an account?"}
                             <Link to={type==="signup" ? "/signin" : "/signup"} className="text-blue-500 hover:text-opacity-50 pl-2 underline" >{type==="signin" ? "Signup" : "Login"}</Link>
                         </div>
+                        {error ? <div className="text-red-500">Email Already Exists!</div> : null}
                     </div>
                     {type==="signup" ? <div className="pt-4">
                         <LabelledInput label="Name" placeholder="Enter your name" onChange={(e) => setPostInputs({...postInputs,name:e.target.value})}/>

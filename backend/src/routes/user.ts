@@ -25,18 +25,32 @@ userRouter.post('/signup', async (c) => {
         // console.log(answer.error);
         return c.json({ error: "invalid input" });
     }
-  
-    const user = await prisma.user.create({
-      data: {
-        email: body.email,
-        password: body.password,
-        name: body.name
-      },
+    
+    const userExist = await prisma.user.findUnique({
+        where: {
+            email: body.email
+        }
     });
-  
-    const jwt = await sign({ id: user.id }, c.env.JWT_SECRET)
-  
-    return c.json({token:jwt})
+
+    if(userExist) {
+        return c.json({status:403, error: "user already exists" });
+    }
+
+    try{
+        const user = await prisma.user.create({
+          data: {
+            email: body.email,
+            password: body.password,
+            name: body.name
+          },
+        });
+        const jwt = await sign({ id: user.id }, c.env.JWT_SECRET)
+        return c.json({status:200,token:jwt})
+    }
+    catch(e){
+        console.log(e);
+        return c.json({ error: "error creating user" });
+    }
 })
 
 userRouter.post('/signin', async (c) => {
@@ -66,5 +80,5 @@ userRouter.post('/signin', async (c) => {
     }
 
     const jwt = await sign({ id: user.id }, c.env.JWT_SECRET);
-    return c.json({token: jwt });
+    return c.json({status:200,token: jwt });
 })
