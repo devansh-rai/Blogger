@@ -52,7 +52,7 @@ function Auth({type}:{type:"signin" | "signup"})
                             {type==="signup"?"Already have an account?":"Don't have an account?"}
                             <Link to={type==="signup" ? "/signin" : "/signup"} className="text-blue-500 hover:text-opacity-50 pl-2 underline" >{type==="signin" ? "Signup" : "Login"}</Link>
                         </div>
-                        {error ? <div className="text-red-500">Email Already Exists!</div> : null}
+                        {error ? <div className="text-red-500">{type==="signup"?"Email Already Exists!":"Wrong Credentials!"}</div> : null}
                     </div>
                     {type==="signup" ? <div className="pt-4">
                         <LabelledInput label="Name" placeholder="Enter your name" onChange={(e) => setPostInputs({...postInputs,name:e.target.value})}/>
